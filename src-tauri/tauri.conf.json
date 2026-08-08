@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "KeyHold",
+  "version": "0.1.0",
+  "identifier": "app.keyhold.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:3000",
+    "beforeBuildCommand": "npm run generate",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "KeyHold",
+        "width": 352,
+        "height": 520,
+        "minWidth": 352,
+        "minHeight": 520,
+        "maxWidth": 352,
+        "maxHeight": 520,
+        "resizable": false,
+        "maximizable": false,
+        "fullscreen": false,
+        "center": true,
+        "alwaysOnTop": true,
+        "decorations": false,
+        "transparent": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "shortDescription": "Hold any key for a chosen duration",
+    "longDescription": "KeyHold is a compact desktop utility that keeps a selected keyboard key pressed until you stop it or its timer ends."
+  }
+}
+
