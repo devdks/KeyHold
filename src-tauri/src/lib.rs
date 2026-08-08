@@ -1,4 +1,5 @@
 mod keyboard;
+mod desktop;
 
 use std::sync::Mutex;
 
@@ -28,7 +29,7 @@ pub fn run() {
 
     tauri::Builder::default()
         .manage(Mutex::new(keyboard))
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .setup(desktop::setup)
         .invoke_handler(tauri::generate_handler![hold_key, release_key])
         .run(tauri::generate_context!())
         .expect("error while running KeyHold");
