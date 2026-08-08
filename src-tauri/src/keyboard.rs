@@ -100,7 +100,6 @@ pub fn map_key(value: &str) -> Result<Key, String> {
         "Pause" => Some(Key::Pause),
         "PrintScreen" => Some(Key::PrintScr),
         "ArrowRight" => Some(Key::RightArrow),
-        "ScrollLock" => Some(Key::ScrollLock),
         "Shift" => Some(Key::Shift),
         "Tab" => Some(Key::Tab),
         "ArrowUp" => Some(Key::UpArrow),
@@ -140,4 +139,3 @@ mod tests {
         assert!(map_key("Dead").is_err());
     }
 }
-
