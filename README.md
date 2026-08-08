@@ -10,7 +10,9 @@ KeyHold est un petit utilitaire desktop qui maintient une touche du clavier enfo
 - maintien réel de la touche au niveau du système ;
 - arrêt manuel ou automatique après une durée définie ;
 - indicateur visuel vert lorsque la touche est maintenue ;
-- fenêtre compacte de 336 × 428 px, fixe et toujours au premier plan ;
+- passage automatique en mini-widget dans le coin supérieur droit pendant le maintien ;
+- mini-widget limité à la touche active et son animation pulsée, cliquable pour rouvrir les contrôles ;
+- fenêtre principale compacte de 336 × 428 px, fixe et toujours au premier plan ;
 - réglages mémorisés localement ;
 - menu dans la barre système pour afficher, relâcher ou quitter ;
 - raccourci global d'urgence `Ctrl + Shift + F12` ;
@@ -28,7 +30,7 @@ Pour interrompre immédiatement le maintien depuis n'importe quelle application,
 
 ## Installation Windows
 
-Les builds validés par GitHub Actions produisent un installateur NSIS. Dans l'onglet **Actions**, ouvrez le dernier workflow **Windows build**, puis téléchargez l'artefact `KeyHold-Windows`.
+Les builds validés par GitHub Actions produisent un installateur NSIS. Téléchargez le `.exe` ou son archive `.zip` depuis la section **Releases**. L'archive ZIP peut être plus simple à récupérer si le navigateur bloque directement l'exécutable.
 
 Windows peut afficher un avertissement SmartScreen tant que l'application n'est pas signée. Certaines applications exécutées en administrateur nécessitent que KeyHold soit également lancé en administrateur. Les logiciels protégés par un système anti-triche peuvent volontairement ignorer les entrées synthétiques.
 

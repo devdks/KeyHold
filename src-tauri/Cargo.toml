@@ -1,6 +1,6 @@
 [package]
 name = "keyhold"
-version = "0.1.0"
+version = "0.1.1"
 description = "A compact desktop utility that holds a selected key"
 authors = ["devdks"]
 edition = "2021"
