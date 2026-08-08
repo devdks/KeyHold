@@ -38,6 +38,7 @@ export function useKeyHold() {
   const selectedKey = ref<KeySelection>({ ...DEFAULT_KEY })
   const isCapturing = ref(false)
   const isHolding = ref(false)
+  const isCompact = ref(false)
   const timerEnabled = ref(false)
   const minutes = ref(5)
   const seconds = ref(0)
@@ -106,6 +107,22 @@ export function useKeyHold() {
     timerId = undefined
   }
 
+  async function setCompactMode(compact: boolean) {
+    isCompact.value = compact
+    if (!isDesktop()) return
+
+    try {
+      await invoke('set_compact_mode', { compact })
+    } catch (error) {
+      isCompact.value = false
+      errorMessage.value = String(error)
+    }
+  }
+
+  function exitCompactMode() {
+    return setCompactMode(false)
+  }
+
   async function stopHold() {
     clearTimer()
     if (isDesktop()) {
@@ -117,6 +134,7 @@ export function useKeyHold() {
     }
     isHolding.value = false
     remainingSeconds.value = 0
+    await exitCompactMode()
   }
 
   async function startHold() {
@@ -136,6 +154,7 @@ export function useKeyHold() {
       }
       isHolding.value = true
       persist()
+      await setCompactMode(true)
 
       if (timerEnabled.value) {
         remainingSeconds.value = duration
@@ -161,6 +180,7 @@ export function useKeyHold() {
         clearTimer()
         isHolding.value = false
         remainingSeconds.value = 0
+        void exitCompactMode()
       })
     }
   })
@@ -176,6 +196,7 @@ export function useKeyHold() {
     selectedKey,
     isCapturing,
     isHolding,
+    isCompact,
     timerEnabled,
     minutes,
     seconds,
@@ -183,5 +204,6 @@ export function useKeyHold() {
     statusLabel,
     startCapture,
     toggleHold,
+    exitCompactMode,
   }
 }

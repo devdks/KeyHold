@@ -78,6 +78,50 @@ fn release_key(app: tauri::AppHandle) -> Result<(), String> {
     release_managed_keyboard(&app)
 }
 
+#[tauri::command]
+fn set_compact_mode(compact: bool, app: tauri::AppHandle) -> Result<(), String> {
+    use tauri::{LogicalSize, PhysicalPosition};
+
+    const FULL_WIDTH: f64 = 336.0;
+    const FULL_HEIGHT: f64 = 428.0;
+    const COMPACT_SIZE: f64 = 132.0;
+    const EDGE_MARGIN: f64 = 14.0;
+
+    let window = app
+        .get_webview_window("main")
+        .ok_or_else(|| "Fenêtre principale introuvable".to_string())?;
+
+    if !compact {
+        window
+            .set_size(LogicalSize::new(FULL_WIDTH, FULL_HEIGHT))
+            .map_err(|error| error.to_string())?;
+        window.center().map_err(|error| error.to_string())?;
+        return Ok(());
+    }
+
+    let monitor = window
+        .current_monitor()
+        .map_err(|error| error.to_string())?
+        .or(window.primary_monitor().map_err(|error| error.to_string())?)
+        .ok_or_else(|| "Écran actif introuvable".to_string())?;
+    let scale = monitor.scale_factor();
+    let work_area = monitor.work_area();
+    let compact_physical = (COMPACT_SIZE * scale).round() as i32;
+    let margin_physical = (EDGE_MARGIN * scale).round() as i32;
+
+    window
+        .set_size(LogicalSize::new(COMPACT_SIZE, COMPACT_SIZE))
+        .map_err(|error| error.to_string())?;
+    window
+        .set_position(PhysicalPosition::new(
+            work_area.position.x + work_area.size.width as i32 - compact_physical - margin_physical,
+            work_area.position.y + margin_physical,
+        ))
+        .map_err(|error| error.to_string())?;
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let keyboard = KeyController::new().expect("failed to initialize keyboard controller");
@@ -85,7 +129,11 @@ pub fn run() {
     tauri::Builder::default()
         .manage(KeyboardState::new(keyboard))
         .setup(desktop::setup)
-        .invoke_handler(tauri::generate_handler![hold_key, release_key])
+        .invoke_handler(tauri::generate_handler![
+            hold_key,
+            release_key,
+            set_compact_mode
+        ])
         .run(tauri::generate_context!())
         .expect("error while running KeyHold");
 }
