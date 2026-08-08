@@ -128,7 +128,12 @@ export function useKeyHold() {
     }
 
     try {
-      if (isDesktop()) await invoke('hold_key', { key: selectedKey.value })
+      if (isDesktop()) {
+        await invoke('hold_key', {
+          key: selectedKey.value,
+          durationSeconds: timerEnabled.value ? duration : null,
+        })
+      }
       isHolding.value = true
       persist()
 

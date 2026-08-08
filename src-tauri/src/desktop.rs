@@ -7,15 +7,12 @@ use tauri_plugin_global_shortcut::{
     Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState,
 };
 
-use crate::KeyboardState;
+use crate::release_managed_keyboard;
 
 const RELEASED_EVENT: &str = "keyhold://released";
 
 fn release_keyboard(app: &AppHandle) {
-    let state = app.state::<KeyboardState>();
-    if let Ok(mut controller) = state.lock() {
-        let _ = controller.release();
-    }
+    let _ = release_managed_keyboard(app);
     let _ = app.emit(RELEASED_EVENT, ());
 }
 
