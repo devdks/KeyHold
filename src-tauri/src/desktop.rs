@@ -3,9 +3,7 @@ use tauri::{
     tray::TrayIconBuilder,
     App, AppHandle, Emitter, Manager,
 };
-use tauri_plugin_global_shortcut::{
-    Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState,
-};
+use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
 use crate::release_managed_keyboard;
 
@@ -24,10 +22,7 @@ fn show_main_window(app: &AppHandle) {
 }
 
 pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
-    let emergency_shortcut = Shortcut::new(
-        Some(Modifiers::CONTROL | Modifiers::SHIFT),
-        Code::F12,
-    );
+    let emergency_shortcut = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::F12);
     let shortcut_for_handler = emergency_shortcut.clone();
 
     app.handle().plugin(
@@ -42,8 +37,7 @@ pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
     app.global_shortcut().register(emergency_shortcut)?;
 
     let show_item = MenuItem::with_id(app, "show", "Afficher KeyHold", true, None::<&str>)?;
-    let release_item =
-        MenuItem::with_id(app, "release", "Relâcher la touche", true, None::<&str>)?;
+    let release_item = MenuItem::with_id(app, "release", "Relâcher la touche", true, None::<&str>)?;
     let quit_item = MenuItem::with_id(app, "quit", "Quitter", true, None::<&str>)?;
     let menu = Menu::with_items(app, &[&show_item, &release_item, &quit_item])?;
 

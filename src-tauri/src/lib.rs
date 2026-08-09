@@ -1,5 +1,5 @@
-mod keyboard;
 mod desktop;
+mod keyboard;
 
 use std::{
     sync::{
@@ -59,7 +59,12 @@ fn hold_key(
             let state = app.state::<KeyboardState>();
             if state
                 .generation
-                .compare_exchange(generation, generation + 1, Ordering::SeqCst, Ordering::SeqCst)
+                .compare_exchange(
+                    generation,
+                    generation + 1,
+                    Ordering::SeqCst,
+                    Ordering::SeqCst,
+                )
                 .is_ok()
             {
                 if let Ok(mut controller) = state.controller.lock() {
@@ -102,7 +107,9 @@ fn set_compact_mode(compact: bool, app: tauri::AppHandle) -> Result<(), String> 
     let monitor = window
         .current_monitor()
         .map_err(|error| error.to_string())?
-        .or(window.primary_monitor().map_err(|error| error.to_string())?)
+        .or(window
+            .primary_monitor()
+            .map_err(|error| error.to_string())?)
         .ok_or_else(|| "Écran actif introuvable".to_string())?;
     let scale = monitor.scale_factor();
     let work_area = monitor.work_area();
@@ -127,6 +134,7 @@ pub fn run() {
     let keyboard = KeyController::new().expect("failed to initialize keyboard controller");
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(KeyboardState::new(keyboard))
         .setup(desktop::setup)
         .invoke_handler(tauri::generate_handler![

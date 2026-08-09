@@ -112,8 +112,12 @@ pub fn map_key(value: &str) -> Result<Key, String> {
 
     let mut chars = value.chars();
     match (chars.next(), chars.next()) {
-        (Some(character), None) => Ok(Key::Unicode(character.to_lowercase().next().unwrap_or(character))),
-        _ => Err(format!("La touche « {value} » n’est pas encore prise en charge")),
+        (Some(character), None) => Ok(Key::Unicode(
+            character.to_lowercase().next().unwrap_or(character),
+        )),
+        _ => Err(format!(
+            "La touche « {value} » n’est pas encore prise en charge"
+        )),
     }
 }
 
