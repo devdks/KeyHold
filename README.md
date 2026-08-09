@@ -41,22 +41,22 @@ Windows peut afficher un avertissement SmartScreen tant que l'application n'est 
 - Node.js 24 ou version LTS compatible ;
 - Rust stable ;
 - prérequis Tauri 2 pour Windows : Microsoft C++ Build Tools et WebView2 ;
-- npm.
+- pnpm 11.
 
 ### Commandes
 
 ```bash
-npm install
-npm run tauri:dev
+pnpm install
+pnpm tauri:dev
 ```
 
 Vérifications disponibles :
 
 ```bash
-npm run typecheck
-npm run generate
+pnpm typecheck
+pnpm generate
 cargo test --manifest-path src-tauri/Cargo.toml
-npm run tauri:build -- --bundles nsis
+pnpm tauri:build --bundles nsis
 ```
 
 ## Architecture
