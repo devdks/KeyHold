@@ -80,13 +80,27 @@ jobs:
           uploadUpdaterSignatures: true
           args: --bundles nsis
 
-      - name: Upload browser-friendly ZIP
+      - name: Publish public updater manifest and browser-friendly ZIP
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $version = (Get-Content package.json | ConvertFrom-Json).version
+          $tag = "v$version"
           $installer = Get-ChildItem "src-tauri/target/release/bundle/nsis/*.exe" | Select-Object -First 1
+          $manifestDirectory = "updater-manifest"
+          $manifestPath = "$manifestDirectory/latest.json"
+          $downloadUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/$([uri]::EscapeDataString($installer.Name))"
+
+          New-Item -ItemType Directory -Path $manifestDirectory | Out-Null
+          gh release download $tag --pattern latest.json --dir $manifestDirectory
+          $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
+          $manifest.platforms.PSObject.Properties | ForEach-Object {
+            $_.Value.url = $downloadUrl
+          }
+          $manifest | ConvertTo-Json -Depth 10 | Set-Content $manifestPath -Encoding utf8NoBOM
+          gh release upload $tag $manifestPath --clobber
+
           $archive = "KeyHold_${version}_x64-setup.zip"
           Compress-Archive -Path $installer.FullName -DestinationPath $archive
-          gh release upload "v$version" $archive --clobber
+          gh release upload $tag $archive --clobber
