@@ -1725,7 +1725,7 @@ dependencies = [
 
 [[package]]
 name = "keyhold"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "enigo",
  "serde",
@@ -1733,6 +1733,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-global-shortcut",
+ "tauri-plugin-process",
  "tauri-plugin-updater",
 ]
 

@@ -16,7 +16,9 @@ KeyHold est un petit utilitaire desktop qui maintient une touche du clavier enfo
 - réglages mémorisés localement ;
 - menu dans la barre système pour afficher, relâcher ou quitter ;
 - raccourci global d'urgence `Ctrl + Shift + F12` ;
-- relâchement garanti par Rust même lorsque la fenêtre est masquée.
+- relâchement garanti par Rust même lorsque la fenêtre est masquée ;
+- recherche et installation automatiques des nouvelles versions au lancement ;
+- vérification cryptographique de chaque mise à jour avant son installation.
 
 ## Utilisation
 
@@ -33,6 +35,8 @@ Pour interrompre immédiatement le maintien depuis n'importe quelle application,
 Les builds validés par GitHub Actions produisent un installateur NSIS. Téléchargez le `.exe` ou son archive `.zip` depuis la section **Releases**. L'archive ZIP peut être plus simple à récupérer si le navigateur bloque directement l'exécutable.
 
 Windows peut afficher un avertissement SmartScreen tant que l'application n'est pas signée. Certaines applications exécutées en administrateur nécessitent que KeyHold soit également lancé en administrateur. Les logiciels protégés par un système anti-triche peuvent volontairement ignorer les entrées synthétiques.
+
+La signature interne des mises à jour garantit leur provenance et leur intégrité. Elle est indépendante de la signature de code Windows utilisée par SmartScreen.
 
 ## Développement
 
