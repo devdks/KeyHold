@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { useAppUpdater } from "~/composables/useAppUpdater";
 import { useKeyHold } from "~/composables/useKeyHold";
 
 const {
@@ -17,6 +18,14 @@ const {
   exitCompactMode,
 } = useKeyHold();
 
+const {
+  updateStatus,
+  updateVersion,
+  updateProgress,
+  isUpdateVisible,
+  checkForUpdates,
+} = useAppUpdater();
+
 const isDesktop = import.meta.client && "__TAURI_INTERNALS__" in window;
 
 async function minimizeWindow() {
@@ -31,6 +40,14 @@ function handleKeyClick() {
   if (isCompact.value) return exitCompactMode();
   startCapture();
 }
+
+onMounted(() => {
+  window.setTimeout(() => {
+    void checkForUpdates(async () => {
+      if (isHolding.value) await toggleHold();
+    });
+  }, 800);
+});
 </script>
 
 <template>
@@ -38,6 +55,36 @@ function handleKeyClick() {
     class="window"
     :class="{ 'is-active': isHolding, 'is-compact': isCompact }"
   >
+    <section
+      v-if="isUpdateVisible"
+      class="update-overlay"
+      role="status"
+      aria-live="polite"
+    >
+      <span class="update-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14" />
+        </svg>
+      </span>
+      <strong>Installation de KeyHold {{ updateVersion }}</strong>
+      <p>
+        {{
+          updateStatus === "installing"
+            ? "Mise à jour installée, redémarrage…"
+            : `Téléchargement… ${updateProgress}%`
+        }}
+      </p>
+      <div
+        class="update-progress"
+        role="progressbar"
+        :aria-valuenow="updateProgress"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        <span :style="{ width: `${updateProgress}%` }" />
+      </div>
+    </section>
+
     <section v-if="isCompact" class="compact-panel">
       <button
         type="button"

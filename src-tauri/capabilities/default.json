@@ -11,6 +11,8 @@
     "core:window:allow-show",
     "core:window:allow-set-focus",
     "global-shortcut:allow-register",
-    "global-shortcut:allow-unregister"
+    "global-shortcut:allow-unregister",
+    "process:allow-restart",
+    "updater:default"
   ]
 }

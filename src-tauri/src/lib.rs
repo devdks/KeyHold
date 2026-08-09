@@ -134,6 +134,7 @@ pub fn run() {
     let keyboard = KeyController::new().expect("failed to initialize keyboard controller");
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(KeyboardState::new(keyboard))
         .setup(desktop::setup)

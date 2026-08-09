@@ -32,6 +32,7 @@
   },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "targets": "all",
     "icon": [
       "icons/32x32.png",
@@ -42,5 +43,16 @@
     ],
     "shortDescription": "Hold any key for a chosen duration",
     "longDescription": "KeyHold is a compact desktop utility that keeps a selected keyboard key pressed until you stop it or its timer ends."
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEYzMzEwRDRENDc2N0JFQTkKUldTcHZtZEhUUTB4ODQ2Mm9Hc3NvOW4vV0tOT0RzNXA2YmpBUy9qbG5FUEFWak9SVi9uV0htSDYK",
+      "endpoints": [
+        "https://github.com/devdks/KeyHold/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }
