@@ -1,6 +1,6 @@
 # KeyHold
 
-KeyHold est un petit utilitaire desktop qui maintient une touche du clavier enfoncée à votre place. Sa fenêtre reste discrète au-dessus des autres applications et montre immédiatement si la touche est active.
+KeyHold est un petit utilitaire desktop qui maintient une ou plusieurs touches du clavier enfoncées à votre place. Sa fenêtre reste discrète au-dessus des autres applications et montre immédiatement si les touches sont actives.
 
 > État actuel : première version ciblée et compilée pour **Windows 10/11**. La couche clavier est isolée pour permettre une adaptation ultérieure à macOS et Linux.
 
@@ -26,8 +26,8 @@ KeyHold est un petit utilitaire desktop qui maintient une touche du clavier enfo
 1. Ouvrez KeyHold.
 2. Cliquez sur les touches affichées au centre, maintenez la touche ou la combinaison souhaitée, puis relâchez toutes les touches.
 3. Activez **Arrêt automatique** si nécessaire et choisissez la durée.
-4. Cliquez sur **Maintenir la touche**.
-5. Revenez dans l'application cible : la touche reste enfoncée jusqu'à l'arrêt manuel ou la fin du timer.
+4. Cliquez sur **Maintenir la touche** ou **Maintenir les touches**.
+5. Revenez dans l'application cible : la sélection reste enfoncée jusqu'à l'arrêt manuel ou la fin du timer.
 
 Pour interrompre immédiatement le maintien depuis n'importe quelle application, utilisez `Ctrl + Shift + F12`.
 
