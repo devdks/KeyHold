@@ -4,7 +4,6 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize)]
 pub struct KeySelection {
     pub key: String,
-    #[allow(dead_code)]
     pub code: String,
     #[allow(dead_code)]
     pub label: String,
@@ -25,8 +24,36 @@ fn map_selections(selections: &[KeySelection]) -> Result<Vec<Key>, String> {
 
     selections
         .iter()
-        .map(|selection| map_key(&selection.key))
+        .map(map_selection)
         .collect()
+}
+
+fn map_selection(selection: &KeySelection) -> Result<Key, String> {
+    let physical_key = match selection.code.as_str() {
+        "ControlLeft" => Some(Key::LControl),
+        "ControlRight" => Some(Key::RControl),
+        "ShiftLeft" => Some(Key::LShift),
+        "ShiftRight" => Some(Key::RShift),
+        "Numpad0" => Some(Key::Numpad0),
+        "Numpad1" => Some(Key::Numpad1),
+        "Numpad2" => Some(Key::Numpad2),
+        "Numpad3" => Some(Key::Numpad3),
+        "Numpad4" => Some(Key::Numpad4),
+        "Numpad5" => Some(Key::Numpad5),
+        "Numpad6" => Some(Key::Numpad6),
+        "Numpad7" => Some(Key::Numpad7),
+        "Numpad8" => Some(Key::Numpad8),
+        "Numpad9" => Some(Key::Numpad9),
+        "NumpadAdd" => Some(Key::Add),
+        "NumpadSubtract" => Some(Key::Subtract),
+        "NumpadMultiply" => Some(Key::Multiply),
+        "NumpadDivide" => Some(Key::Divide),
+        "NumpadDecimal" | "NumpadComma" => Some(Key::Decimal),
+        "NumpadEnter" => Some(Key::Return),
+        _ => None,
+    };
+
+    physical_key.map_or_else(|| map_key(&selection.key), Ok)
 }
 
 impl KeyController {
@@ -186,7 +213,28 @@ mod tests {
 
         assert_eq!(
             map_selections(&selections).unwrap(),
-            vec![Key::Control, Key::Unicode('a')]
+            vec![Key::LControl, Key::Unicode('a')]
+        );
+    }
+
+    #[test]
+    fn preserves_sided_modifiers_and_numpad_keys() {
+        let selections = vec![
+            KeySelection {
+                key: "Control".into(),
+                code: "ControlRight".into(),
+                label: "Ctrl".into(),
+            },
+            KeySelection {
+                key: "1".into(),
+                code: "Numpad1".into(),
+                label: "1".into(),
+            },
+        ];
+
+        assert_eq!(
+            map_selections(&selections).unwrap(),
+            vec![Key::RControl, Key::Numpad1]
         );
     }
 

@@ -86,11 +86,11 @@ fn release_keys(app: tauri::AppHandle) -> Result<(), String> {
 fn compact_dimensions(key_count: usize) -> (f64, f64) {
     match key_count {
         0 | 1 => (132.0, 132.0),
-        2 => (156.0, 132.0),
-        3 => (188.0, 132.0),
-        4 => (220.0, 132.0),
-        5 | 6 => (244.0, 164.0),
-        _ => (276.0, 164.0),
+        2 => (148.0, 132.0),
+        3 => (164.0, 132.0),
+        4 => (180.0, 132.0),
+        5 | 6 => (200.0, 148.0),
+        _ => (220.0, 156.0),
     }
 }
 
@@ -171,9 +171,9 @@ mod tests {
     #[test]
     fn compact_window_grows_gradually_for_more_keys() {
         assert_eq!(compact_dimensions(1), (132.0, 132.0));
-        assert_eq!(compact_dimensions(2), (156.0, 132.0));
-        assert_eq!(compact_dimensions(4), (220.0, 132.0));
-        assert_eq!(compact_dimensions(6), (244.0, 164.0));
-        assert_eq!(compact_dimensions(8), (276.0, 164.0));
+        assert_eq!(compact_dimensions(2), (148.0, 132.0));
+        assert_eq!(compact_dimensions(4), (180.0, 132.0));
+        assert_eq!(compact_dimensions(6), (200.0, 148.0));
+        assert_eq!(compact_dimensions(8), (220.0, 156.0));
     }
 }

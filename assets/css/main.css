@@ -119,7 +119,7 @@ button { color: inherit; }
   box-shadow: 0 0 0 6px rgba(185, 244, 95, 0.06), 0 0 28px rgba(185, 244, 95, 0.18);
 }
 
-.key-orbit.compact.keys-1 {
+.key-orbit.compact.single {
   width: 104px;
   height: 104px;
   border-radius: 50%;
@@ -134,26 +134,27 @@ button { color: inherit; }
 .key-orbit.compact kbd {
   flex: 1 1 38px;
   min-width: 34px;
-  max-width: 70px;
-  min-height: 40px;
-  padding: 0 7px;
-  font-size: 15px;
+  max-width: 64px;
+  min-height: 38px;
+  padding: 0 5px;
+  font-size: 13px;
 }
 
-.key-orbit.compact.keys-1 kbd {
+.key-orbit.compact kbd.long,
+.key-orbit.multi kbd.long {
+  padding-inline: 3px;
+  font-size: 9px;
+  letter-spacing: -0.06em;
+}
+
+.key-orbit.compact.single kbd {
   flex: none;
   min-width: 56px;
   min-height: 54px;
   font-size: clamp(14px, 22vw, 24px);
 }
 
-.key-orbit.compact.keys-2 kbd { min-height: 48px; font-size: 18px; }
-.key-orbit.compact.keys-3 kbd { min-height: 44px; font-size: 16px; }
-.key-orbit.compact.keys-4 kbd,
-.key-orbit.compact.keys-5 kbd,
-.key-orbit.compact.keys-6 kbd,
-.key-orbit.compact.keys-7 kbd,
-.key-orbit.compact.keys-8 kbd { min-height: 38px; font-size: 13px; }
+.key-orbit.compact.single kbd.long { font-size: 11px; }
 
 .titlebar {
   height: 42px;

@@ -13,6 +13,19 @@ const DEFAULT_KEYS: KeySelection[] = [
 const MAX_KEYS = 8;
 
 function displayKey(event: KeyboardEvent): string {
+  const numpadLabels: Record<string, string> = {
+    NumpadAdd: "Num +",
+    NumpadSubtract: "Num −",
+    NumpadMultiply: "Num ×",
+    NumpadDivide: "Num ÷",
+    NumpadDecimal: "Num .",
+    NumpadComma: "Num ,",
+    NumpadEnter: "Num ↵",
+  };
+  if (/^Numpad\d$/.test(event.code)) return `Num ${event.code.slice(-1)}`;
+  const numpadLabel = numpadLabels[event.code];
+  if (numpadLabel) return numpadLabel;
+
   const labels: Record<string, string> = {
     " ": "Espace",
     ArrowUp: "↑",
@@ -127,9 +140,14 @@ export function useKeyHold() {
     selectedKeys.value = pendingKeys.value.map((key) => ({ ...key }));
     isCapturing.value = false;
     pressedCodes.clear();
+    removeCaptureListeners();
+    persist();
+  }
+
+  function removeCaptureListeners() {
     window.removeEventListener("keydown", onKeyDownCaptured, true);
     window.removeEventListener("keyup", onKeyUpCaptured, true);
-    persist();
+    window.removeEventListener("blur", onCaptureBlur, true);
   }
 
   function onKeyDownCaptured(event: KeyboardEvent) {
@@ -154,6 +172,17 @@ export function useKeyHold() {
     if (!pressedCodes.size) finishCapture();
   }
 
+  function onCaptureBlur() {
+    pressedCodes.clear();
+    if (pendingKeys.value.length) {
+      finishCapture();
+      return;
+    }
+
+    isCapturing.value = false;
+    removeCaptureListeners();
+  }
+
   function startCapture() {
     errorMessage.value = "";
     pendingKeys.value = [];
@@ -161,6 +190,7 @@ export function useKeyHold() {
     isCapturing.value = true;
     window.addEventListener("keydown", onKeyDownCaptured, true);
     window.addEventListener("keyup", onKeyUpCaptured, true);
+    window.addEventListener("blur", onCaptureBlur, true);
   }
 
   function clearTimer() {
@@ -250,8 +280,7 @@ export function useKeyHold() {
   });
 
   onBeforeUnmount(() => {
-    window.removeEventListener("keydown", onKeyDownCaptured, true);
-    window.removeEventListener("keyup", onKeyUpCaptured, true);
+    removeCaptureListeners();
     clearTimer();
     unlisten?.();
     if (isHolding.value && isDesktop()) void invoke("release_keys");

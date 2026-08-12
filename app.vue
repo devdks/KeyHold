@@ -91,14 +91,21 @@ onMounted(() => {
       <button
         type="button"
         class="key-orbit active compact"
-        :class="`keys-${Math.min(selectedKeys.length, 8)}`"
+        :class="{ single: selectedKeys.length === 1 }"
         title="Cliquer pour rouvrir KeyHold"
         :aria-label="`Touches ${selectedKeysLabel} maintenues. Cliquer pour rouvrir KeyHold`"
         @click="handleKeyClick"
       >
         <span class="orbit-pulse" aria-hidden="true" />
         <span class="key-stack">
-          <kbd v-for="key in selectedKeys" :key="key.code">{{ key.label }}</kbd>
+          <kbd
+            v-for="key in selectedKeys"
+            :key="key.code"
+            :class="{ long: key.label.length > 5 }"
+            :title="key.label"
+          >
+            {{ key.label }}
+          </kbd>
         </span>
       </button>
     </section>
@@ -164,9 +171,14 @@ onMounted(() => {
             …
           </span>
           <span v-else class="key-stack">
-            <kbd v-for="key in displayedKeys" :key="key.code">{{
-              key.label
-            }}</kbd>
+            <kbd
+              v-for="key in displayedKeys"
+              :key="key.code"
+              :class="{ long: key.label.length > 5 }"
+              :title="key.label"
+            >
+              {{ key.label }}
+            </kbd>
           </span>
         </button>
 
