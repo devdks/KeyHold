@@ -4,7 +4,9 @@ import { useAppUpdater } from "~/composables/useAppUpdater";
 import { useKeyHold } from "~/composables/useKeyHold";
 
 const {
-  selectedKey,
+  selectedKeys,
+  displayedKeys,
+  selectedKeysLabel,
   isCapturing,
   isHolding,
   isCompact,
@@ -89,12 +91,15 @@ onMounted(() => {
       <button
         type="button"
         class="key-orbit active compact"
+        :class="`keys-${Math.min(selectedKeys.length, 8)}`"
         title="Cliquer pour rouvrir KeyHold"
-        :aria-label="`Touche ${selectedKey.label} maintenue. Cliquer pour rouvrir KeyHold`"
+        :aria-label="`Touches ${selectedKeysLabel} maintenues. Cliquer pour rouvrir KeyHold`"
         @click="handleKeyClick"
       >
         <span class="orbit-pulse" aria-hidden="true" />
-        <kbd>{{ selectedKey.label }}</kbd>
+        <span class="key-stack">
+          <kbd v-for="key in selectedKeys" :key="key.code">{{ key.label }}</kbd>
+        </span>
       </button>
     </section>
 
@@ -138,17 +143,31 @@ onMounted(() => {
         <button
           type="button"
           class="key-orbit"
-          :class="{ active: isHolding, capturing: isCapturing }"
+          :class="{
+            active: isHolding,
+            capturing: isCapturing,
+            multi: displayedKeys.length > 1,
+          }"
           :disabled="isHolding"
           :aria-label="
             isCapturing
               ? 'Appuyez maintenant sur la touche à utiliser'
-              : `Touche sélectionnée : ${selectedKey.label}. Cliquer pour changer`
+              : `Touches sélectionnées : ${selectedKeysLabel}. Cliquer pour changer`
           "
           @click="handleKeyClick"
         >
           <span class="orbit-pulse" aria-hidden="true" />
-          <kbd>{{ isCapturing ? "…" : selectedKey.label }}</kbd>
+          <span
+            v-if="isCapturing && !displayedKeys.length"
+            class="capture-placeholder"
+          >
+            …
+          </span>
+          <span v-else class="key-stack">
+            <kbd v-for="key in displayedKeys" :key="key.code">{{
+              key.label
+            }}</kbd>
+          </span>
         </button>
 
         <div class="state-line">
@@ -159,8 +178,8 @@ onMounted(() => {
         <p class="change-hint">
           {{
             isCapturing
-              ? "Appuie sur la touche de ton choix"
-              : "Clique sur la touche pour la modifier"
+              ? "Maintiens la combinaison, puis relâche toutes les touches"
+              : "Clique pour choisir une ou plusieurs touches"
           }}
         </p>
       </section>

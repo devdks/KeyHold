@@ -40,8 +40,8 @@ pub(crate) fn release_managed_keyboard(app: &tauri::AppHandle) -> Result<(), Str
 }
 
 #[tauri::command]
-fn hold_key(
-    key: KeySelection,
+fn hold_keys(
+    keys: Vec<KeySelection>,
     duration_seconds: Option<u64>,
     app: tauri::AppHandle,
     state: tauri::State<'_, KeyboardState>,
@@ -51,7 +51,7 @@ fn hold_key(
         .controller
         .lock()
         .map_err(|_| "Le contrôleur clavier ne répond plus".to_string())?
-        .hold(key)?;
+        .hold(keys)?;
 
     if let Some(seconds) = duration_seconds.filter(|value| *value > 0) {
         thread::spawn(move || {
@@ -79,17 +79,31 @@ fn hold_key(
 }
 
 #[tauri::command]
-fn release_key(app: tauri::AppHandle) -> Result<(), String> {
+fn release_keys(app: tauri::AppHandle) -> Result<(), String> {
     release_managed_keyboard(&app)
 }
 
+fn compact_dimensions(key_count: usize) -> (f64, f64) {
+    match key_count {
+        0 | 1 => (132.0, 132.0),
+        2 => (156.0, 132.0),
+        3 => (188.0, 132.0),
+        4 => (220.0, 132.0),
+        5 | 6 => (244.0, 164.0),
+        _ => (276.0, 164.0),
+    }
+}
+
 #[tauri::command]
-fn set_compact_mode(compact: bool, app: tauri::AppHandle) -> Result<(), String> {
+fn set_compact_mode(
+    compact: bool,
+    key_count: usize,
+    app: tauri::AppHandle,
+) -> Result<(), String> {
     use tauri::{LogicalSize, PhysicalPosition};
 
     const FULL_WIDTH: f64 = 336.0;
     const FULL_HEIGHT: f64 = 428.0;
-    const COMPACT_SIZE: f64 = 132.0;
     const EDGE_MARGIN: f64 = 14.0;
 
     let window = app
@@ -113,15 +127,18 @@ fn set_compact_mode(compact: bool, app: tauri::AppHandle) -> Result<(), String> 
         .ok_or_else(|| "Écran actif introuvable".to_string())?;
     let scale = monitor.scale_factor();
     let work_area = monitor.work_area();
-    let compact_physical = (COMPACT_SIZE * scale).round() as i32;
+    let (compact_width, compact_height) = compact_dimensions(key_count);
+    let compact_physical_width = (compact_width * scale).round() as i32;
     let margin_physical = (EDGE_MARGIN * scale).round() as i32;
 
     window
-        .set_size(LogicalSize::new(COMPACT_SIZE, COMPACT_SIZE))
+        .set_size(LogicalSize::new(compact_width, compact_height))
         .map_err(|error| error.to_string())?;
     window
         .set_position(PhysicalPosition::new(
-            work_area.position.x + work_area.size.width as i32 - compact_physical - margin_physical,
+            work_area.position.x + work_area.size.width as i32
+                - compact_physical_width
+                - margin_physical,
             work_area.position.y + margin_physical,
         ))
         .map_err(|error| error.to_string())?;
@@ -139,10 +156,24 @@ pub fn run() {
         .manage(KeyboardState::new(keyboard))
         .setup(desktop::setup)
         .invoke_handler(tauri::generate_handler![
-            hold_key,
-            release_key,
+            hold_keys,
+            release_keys,
             set_compact_mode
         ])
         .run(tauri::generate_context!())
         .expect("error while running KeyHold");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::compact_dimensions;
+
+    #[test]
+    fn compact_window_grows_gradually_for_more_keys() {
+        assert_eq!(compact_dimensions(1), (132.0, 132.0));
+        assert_eq!(compact_dimensions(2), (156.0, 132.0));
+        assert_eq!(compact_dimensions(4), (220.0, 132.0));
+        assert_eq!(compact_dimensions(6), (244.0, 164.0));
+        assert_eq!(compact_dimensions(8), (276.0, 164.0));
+    }
 }

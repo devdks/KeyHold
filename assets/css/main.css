@@ -110,19 +110,50 @@ button { color: inherit; }
 }
 
 .key-orbit.compact {
-  width: 104px;
-  height: 104px;
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
   margin: 0;
+  border-radius: 28px;
   border-color: rgba(185, 244, 95, 0.7);
   background: rgba(21, 23, 17, 0.94);
   box-shadow: 0 0 0 6px rgba(185, 244, 95, 0.06), 0 0 28px rgba(185, 244, 95, 0.18);
 }
 
+.key-orbit.compact.keys-1 {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+}
+
+.key-orbit.compact .key-stack {
+  width: 100%;
+  padding: 12px;
+  gap: 6px;
+}
+
 .key-orbit.compact kbd {
+  flex: 1 1 38px;
+  min-width: 34px;
+  max-width: 70px;
+  min-height: 40px;
+  padding: 0 7px;
+  font-size: 15px;
+}
+
+.key-orbit.compact.keys-1 kbd {
+  flex: none;
   min-width: 56px;
   min-height: 54px;
   font-size: clamp(14px, 22vw, 24px);
 }
+
+.key-orbit.compact.keys-2 kbd { min-height: 48px; font-size: 18px; }
+.key-orbit.compact.keys-3 kbd { min-height: 44px; font-size: 16px; }
+.key-orbit.compact.keys-4 kbd,
+.key-orbit.compact.keys-5 kbd,
+.key-orbit.compact.keys-6 kbd,
+.key-orbit.compact.keys-7 kbd,
+.key-orbit.compact.keys-8 kbd { min-height: 38px; font-size: 13px; }
 
 .titlebar {
   height: 42px;
@@ -183,8 +214,21 @@ button { color: inherit; }
   cursor: pointer;
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
+.key-orbit.multi {
+  width: 220px;
+  border-radius: 56px;
+}
 .key-orbit:hover:not(:disabled) { transform: translateY(-1px); border-color: rgba(185, 244, 95, 0.35); }
 .key-orbit:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.key-stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 .key-orbit kbd {
   position: relative;
   z-index: 1;
@@ -205,6 +249,21 @@ button { color: inherit; }
   font-weight: 760;
   letter-spacing: -0.04em;
   white-space: nowrap;
+}
+.key-orbit.multi .key-stack { padding: 12px; }
+.key-orbit.multi kbd {
+  min-width: 38px;
+  max-width: 76px;
+  min-height: 42px;
+  padding: 0 8px;
+  font-size: 15px;
+}
+.capture-placeholder {
+  position: relative;
+  z-index: 1;
+  font-size: 32px;
+  font-weight: 760;
+  color: var(--accent);
 }
 .key-orbit.active {
   border-color: rgba(185, 244, 95, 0.68);

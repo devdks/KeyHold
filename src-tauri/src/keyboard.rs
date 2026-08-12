@@ -12,34 +12,60 @@ pub struct KeySelection {
 
 pub struct KeyController {
     enigo: Enigo,
-    held: Option<Key>,
+    held: Vec<Key>,
+}
+
+fn map_selections(selections: &[KeySelection]) -> Result<Vec<Key>, String> {
+    if selections.is_empty() {
+        return Err("Choisis au moins une touche".to_string());
+    }
+    if selections.len() > 8 {
+        return Err("Tu peux maintenir au maximum 8 touches".to_string());
+    }
+
+    selections
+        .iter()
+        .map(|selection| map_key(&selection.key))
+        .collect()
 }
 
 impl KeyController {
     pub fn new() -> Result<Self, String> {
         let enigo = Enigo::new(&Settings::default())
             .map_err(|error| format!("Impossible d’initialiser le clavier : {error}"))?;
-        Ok(Self { enigo, held: None })
+        Ok(Self {
+            enigo,
+            held: Vec::new(),
+        })
     }
 
-    pub fn hold(&mut self, selection: KeySelection) -> Result<(), String> {
+    pub fn hold(&mut self, selections: Vec<KeySelection>) -> Result<(), String> {
+        let keys = map_selections(&selections)?;
         self.release()?;
-        let key = map_key(&selection.key)?;
-        self.enigo
-            .key(key, Direction::Press)
-            .map_err(|error| format!("Impossible de maintenir cette touche : {error}"))?;
-        self.held = Some(key);
+
+        for key in keys {
+            if let Err(error) = self.enigo.key(key, Direction::Press) {
+                let _ = self.release();
+                return Err(format!("Impossible de maintenir cette touche : {error}"));
+            }
+            self.held.push(key);
+        }
+
         Ok(())
     }
 
     pub fn release(&mut self) -> Result<(), String> {
-        let Some(key) = self.held.take() else {
-            return Ok(());
-        };
+        let mut first_error = None;
 
-        self.enigo
-            .key(key, Direction::Release)
-            .map_err(|error| format!("Impossible de relâcher la touche : {error}"))
+        while let Some(key) = self.held.pop() {
+            if let Err(error) = self.enigo.key(key, Direction::Release) {
+                first_error.get_or_insert_with(|| {
+                    format!("Impossible de relâcher une touche : {error}")
+                });
+            }
+        }
+
+        first_error.map_or(Ok(()), Err)
     }
 }
 
@@ -141,5 +167,40 @@ mod tests {
     #[test]
     fn rejects_unknown_named_keys() {
         assert!(map_key("Dead").is_err());
+    }
+
+    #[test]
+    fn maps_multiple_keys_in_order() {
+        let selections = vec![
+            KeySelection {
+                key: "Control".into(),
+                code: "ControlLeft".into(),
+                label: "Ctrl".into(),
+            },
+            KeySelection {
+                key: "A".into(),
+                code: "KeyA".into(),
+                label: "A".into(),
+            },
+        ];
+
+        assert_eq!(
+            map_selections(&selections).unwrap(),
+            vec![Key::Control, Key::Unicode('a')]
+        );
+    }
+
+    #[test]
+    fn rejects_empty_or_oversized_combinations() {
+        assert!(map_selections(&[]).is_err());
+
+        let selections = (0..9)
+            .map(|_| KeySelection {
+                key: "A".into(),
+                code: "KeyA".into(),
+                label: "A".into(),
+            })
+            .collect::<Vec<_>>();
+        assert!(map_selections(&selections).is_err());
     }
 }
