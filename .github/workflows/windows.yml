@@ -55,7 +55,15 @@ jobs:
         run: cargo test --manifest-path src-tauri/Cargo.toml
 
       - name: Build Windows installer
-        run: pnpm tauri:build --bundles nsis --config src-tauri/tauri.ci.conf.json
+        shell: pwsh
+        run: |
+          $lines = pnpm tauri:build --bundles nsis --config src-tauri/tauri.ci.conf.json 2>&1 | Tee-Object -Variable buildOutput
+          if ($LASTEXITCODE -ne 0) {
+            $tail = ($buildOutput | Select-Object -Last 40) -join "`n"
+            $escaped = $tail.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+            Write-Output "::error title=Windows installer build failed::$escaped"
+            exit 1
+          }
 
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
