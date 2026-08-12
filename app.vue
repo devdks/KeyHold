@@ -158,7 +158,7 @@ onMounted(() => {
           :disabled="isHolding"
           :aria-label="
             isCapturing
-              ? 'Appuyez maintenant sur la touche à utiliser'
+              ? 'Appuyez maintenant sur une ou plusieurs touches à utiliser'
               : `Touches sélectionnées : ${selectedKeysLabel}. Cliquer pour changer`
           "
           @click="handleKeyClick"
@@ -245,7 +245,15 @@ onMounted(() => {
         <svg v-else viewBox="0 0 20 20" aria-hidden="true">
           <path d="m8 5 6 5-6 5Z" />
         </svg>
-        {{ isHolding ? "Relâcher la touche" : "Maintenir la touche" }}
+        {{
+          isHolding
+            ? selectedKeys.length > 1
+              ? "Relâcher les touches"
+              : "Relâcher la touche"
+            : selectedKeys.length > 1
+              ? "Maintenir les touches"
+              : "Maintenir la touche"
+        }}
       </button>
 
       <footer>
